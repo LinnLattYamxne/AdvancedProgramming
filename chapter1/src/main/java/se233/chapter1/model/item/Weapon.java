@@ -1,6 +1,7 @@
 package se233.chapter1.model.item;
 
 import se233.chapter1.model.DamageType;
+import se233.chapter1.model.character.BattleMageCharacter;
 
 public class Weapon extends BasedEquipment {
     private int power;

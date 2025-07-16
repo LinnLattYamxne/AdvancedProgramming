@@ -15,16 +15,43 @@ import se233.chapter1.model.item.Weapon;
 import java.util.ArrayList;
 
 public class AllCustomHandler {
-    public static class  GenCharacterHandler implements EventHandler<ActionEvent> {
+    public static class GenCharacterHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent actionEvent) {
+            BasedCharacter currentChar = Launcher.getMainCharacter();
+
+            // Unequip from character and return to inventory
+            if (currentChar != null) {
+                if (Launcher.getEquippedWeapon() != null) {
+                    currentChar.equipWeapon(null);
+                    Launcher.getAllEquipments().add(Launcher.getEquippedWeapon());
+                    Launcher.setEquippedWeapon(null);
+                }
+
+                if (Launcher.getEquippedArmor() != null) {
+                    currentChar.equipArmor(null);
+                    Launcher.getAllEquipments().add(Launcher.getEquippedArmor());
+                    Launcher.setEquippedArmor(null);
+                }
+            }
+
+            // Generate new character
             Launcher.setMainCharacter(GenCharacter.setUpCharacter());
+
+            // Refresh UI
             Launcher.refreshPane();
         }
     }
+
     public static void onDragDetected(MouseEvent event, BasedEquipment equipment, ImageView imgView) {
+//        ArrayList<BasedEquipment> allEquipments = Launcher.getAllEquipments();
+//        allEquipments.removeIf(eq -> eq.getName().equals(equipment.getName()));
+//        Launcher.setAllEquipments(allEquipments);
+//        Launcher.refreshPane();
+
         Dragboard db = imgView.startDragAndDrop(TransferMode.ANY);
         db.setDragView(imgView.getImage());
+
         ClipboardContent content = new ClipboardContent();
         content.put(equipment.DATA_FORMAT, equipment);
         db.setContent(content);
@@ -69,21 +96,40 @@ public class AllCustomHandler {
         }
         event.setDropCompleted(dragCompleted);
     }
-    public static void onEquipDone(DragEvent event){
+    public static void onEquipDone(DragEvent event) {
         Dragboard dragboard = event.getDragboard();
+        BasedEquipment retrievedEquipment = (BasedEquipment) dragboard.getContent(BasedEquipment.DATA_FORMAT);
         ArrayList<BasedEquipment> allEquipments = Launcher.getAllEquipments();
-        BasedEquipment retrievedEquipment = (BasedEquipment)dragboard.getContent(
-                BasedEquipment.DATA_FORMAT);
-        int pos = -1;
-        for(int i=0;i<allEquipments.size();i++){
-            if (allEquipments.get(i).getName().equals(retrievedEquipment.getName())) {
-                pos = i;
+        BasedCharacter character = Launcher.getMainCharacter();
+
+        if (event.getTransferMode() == null) {
+            // Drop failed → return to inventory and unequip
+            if (retrievedEquipment instanceof Weapon) {
+                if (Launcher.getEquippedWeapon() == retrievedEquipment) {
+                    character.equipWeapon(null);
+                    Launcher.setEquippedWeapon(null);
+                }
+            } else if (retrievedEquipment instanceof Armor) {
+                if (Launcher.getEquippedArmor() == retrievedEquipment) {
+                    character.equipArmor(null);
+                    Launcher.setEquippedArmor(null);
+                }
             }
+
+            // Avoid duplicates
+            if (!allEquipments.contains(retrievedEquipment)) {
+                allEquipments.add(retrievedEquipment);
+            }
+
+        } else {
+            // Successful drop → remove from inventory
+            allEquipments.removeIf(eq -> eq == retrievedEquipment || eq.getName().equals(retrievedEquipment.getName()));
         }
-        if(pos!=-1){
-            allEquipments.remove(pos);
-        }
+
+        Launcher.setMainCharacter(character);
         Launcher.setAllEquipments(allEquipments);
         Launcher.refreshPane();
     }
+
+
 }

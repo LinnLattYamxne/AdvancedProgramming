@@ -15,4 +15,5 @@ public class PhysicalCharacter extends BasedCharacter {
         this.defense = basedDef;
         this.resistance = basedRes;
     }
+
 }

@@ -102,9 +102,13 @@ public class Launcher extends Application {
         mainPane.setBottom(inventoryPane);
         return mainPane;
     }
+
     public static void refreshPane() {
+//        characterPane.getChildren().clear();
         characterPane.drawPane(mainCharacter);
+//        equipPane.getChildren().clear();
         equipPane.drawPane(equippedWeapon,equippedArmor);
+//        inventoryPane.getChildren().clear();
         inventoryPane.drawPane(allEquipments);
     }
     public static BasedCharacter getMainCharacter() { return mainCharacter; }
@@ -114,4 +118,26 @@ public class Launcher extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    public static void generateNewCharacter() {
+        // Unequip and return current equipment
+        if (equippedWeapon != null) {
+            allEquipments.add(equippedWeapon);
+            equippedWeapon = null;
+        }
+
+        if (equippedArmor != null) {
+            allEquipments.add(equippedArmor);
+            equippedArmor = null;
+        }
+
+        // Generate new character
+        BasedCharacter newCharacter = GenCharacter.setUpCharacter();
+        newCharacter.equipWeapon(null); // Optional: if your logic needs
+        newCharacter.equipArmor(null);  // Optional
+
+        setMainCharacter(newCharacter);
+        refreshPane(); // Update UI
+    }
+
 }

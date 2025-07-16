@@ -12,6 +12,7 @@ import se233.chapter1.Launcher;
 import se233.chapter1.controller.AllCustomHandler;
 import se233.chapter1.model.character.BasedCharacter;
 import javafx.event.ActionEvent;
+import se233.chapter1.model.character.BattleMageCharacter;
 
 public class CharacterPane extends ScrollPane {
     private BasedCharacter character;
@@ -28,7 +29,11 @@ public class CharacterPane extends ScrollPane {
             name = new Label("Name: " + character.getName());
             mainImage.setImage(new Image(Launcher.class.getResource(character.getImagepath()).toString()));
             hp = new Label("HP: " + character.getHp().toString()+"/"+character.getFullHp().toString());
-            type = new Label("Type: " + character.getType().toString());
+            String typeText = (character instanceof BattleMageCharacter)
+                    ? "Physical, Magical (BattleMage)"
+                    : character.getType().toString();
+            type = new Label("Type: " + typeText);
+
             atk = new Label("ATK: " + character.getPower());
             def = new Label("DEF: " + character.getDefense());
             res =  new Label("RES: " + character.getResistance());
@@ -54,4 +59,6 @@ public class CharacterPane extends ScrollPane {
         this.setStyle("-fx-background-color: Red;");
         this.setContent(characterInfo);
     }
+
+
 }
