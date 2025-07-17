@@ -21,6 +21,35 @@ public abstract class BasedCharacter {
     public Integer getResistance() { return resistance; }
 
     // Inside BasedCharacter.java
+//    public void equipWeapon(Weapon weapon) {
+//        if (weapon == null) {
+//            this.weapon = null;
+//            this.power = this.basedPow;
+//            return;
+//        }
+//
+//        // BattleMage can equip anything
+//        if (this instanceof BattleMageCharacter || this.type == DamageType.both || this.type == weapon.getDamageType()) {
+//            this.weapon = weapon;
+//            this.power = this.basedPow + weapon.getPower();
+//        } else {
+//            // Incompatible type: return to inventory
+//            // Put weapon back in inventory
+//            if (Launcher.getAllEquipments() != null) {
+//                Launcher.getAllEquipments().add(weapon);
+//            }
+//
+//            // Make sure the character doesn’t hold the weapon
+//            this.weapon = null;
+//            this.power = this.basedPow;
+//            return;
+//
+//            // Optional: call UI update
+//            Launcher.setEquippedWeapon(null);
+//            Launcher.refreshPane();
+//        }
+//    }
+
     public void equipWeapon(Weapon weapon) {
         if (weapon == null) {
             this.weapon = null;
@@ -28,27 +57,15 @@ public abstract class BasedCharacter {
             return;
         }
 
-        // BattleMage can equip anything
-        if (this instanceof BattleMageCharacter || this.type == DamageType.both || this.type == weapon.getDamageType()) {
+        if (this instanceof BattleMageCharacter || this.type == weapon.getDamageType()) {
             this.weapon = weapon;
             this.power = this.basedPow + weapon.getPower();
         } else {
-            // Incompatible type: return to inventory
-            // Put weapon back in inventory
-            if (Launcher.getAllEquipments() != null) {
-                Launcher.getAllEquipments().add(weapon);
-            }
-
-            // Make sure the character doesn’t hold the weapon
-            this.weapon = null;
-            this.power = this.basedPow;
-
-            // Optional: call UI update
+            Launcher.getAllEquipments().add(weapon);
             Launcher.setEquippedWeapon(null);
-            Launcher.refreshPane();
+            System.out.println("Incompatible weapon type for this character!");
         }
     }
-
 
     public void equipArmor(Armor armor) {
         if (armor == null) {
@@ -59,7 +76,10 @@ public abstract class BasedCharacter {
         }
 
         if (this instanceof BattleMageCharacter) {
-            Launcher.getAllEquipments().add(armor);
+            System.out.println("BattleMage cannot equip armor");
+            this.armor = null;
+            this.defense = this.basedDef;
+            this.resistance = this.basedRes;
             return;
         }
 
@@ -83,5 +103,13 @@ public abstract class BasedCharacter {
     }
     public void unequipArmor () {
         this.armor = null;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public Armor getArmor() {
+        return armor;
     }
 }
